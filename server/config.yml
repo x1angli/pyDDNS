@@ -1,0 +1,21 @@
+flask:
+    DEBUG: true
+    SERVER_NAME: localhost:81
+db:
+    drivername: mysql+mysqlconnector
+    host: localhost
+    port: 3306
+    username: root
+    password: root123
+    database: chiasma
+#mysql:
+#    host: quezixiong.mysql.rds.aliyuncs.com
+#    user: quezixiong
+#    passwd: quezixiong
+#    db: ipdatabase
+other:
+    preprocessing_queue:
+        - preprocessing.scale_and_center
+        - preprocessing.dot_reduction
+        - preprocessing.connect_lines
+    use_anonymous: yes

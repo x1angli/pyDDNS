@@ -1,0 +1,9 @@
+--allow-external pyyaml
+pyyaml
+
+https://github.com/mitsuhiko/flask/tarball/master#egg=flask
+
+# SQLAlchemy
+Flask-SQLAlchemy
+
+flask-restful
