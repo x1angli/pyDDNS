@@ -8,14 +8,8 @@ db:
     username: root
     password: root123
     database: chiasma
-#mysql:
+#db1:
 #    host: quezixiong.mysql.rds.aliyuncs.com
 #    user: quezixiong
 #    passwd: quezixiong
 #    db: ipdatabase
-other:
-    preprocessing_queue:
-        - preprocessing.scale_and_center
-        - preprocessing.dot_reduction
-        - preprocessing.connect_lines
-    use_anonymous: yes
