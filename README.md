@@ -14,17 +14,20 @@ This python file has three modules:
 1. Modify the `/server/config.yml` file
 1. Execute following commands
 
-    pip install -r requirements.txt
-    flask --app=server.app initdb
+        pip install -r requirements.txt
+        flask --app=server.app initdb
+
 
 # Start using the server
 1. Execute following commands
  
-    cd DDNS-chiasma
-    set PYTHONPATH=%PYTHONPATH%;.
-    python server/app.py
+        cd DDNS-chiasma
+        set PYTHONPATH=%PYTHONPATH%;.
+        python server/app.py
+        
 1. Open your browser, visit `http://localhost:81/ping`, and you would get the ping-pong JSON.
 1. Alternatively, use `curl` to get it:
 
-    curl -X GET http://localhost:81/ping
+        curl -X GET http://localhost:81/ping
+    
 For other curl examples, see https://public-api.sonic.net/dyndns
