@@ -1,6 +1,5 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
 
 # C extensions
 *.so
@@ -62,6 +61,5 @@ target/
 
 # Jetbrain PyCharm
 .idea/
-*.iml
 *.iws
 /bin/
