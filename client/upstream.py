@@ -3,7 +3,7 @@ __author__ = 'x1ang.li'
 from client.common import *
 
 def checkip():
-    r = reqget('/ip/')
+    r = reqget('/ip')
     if (r.status_code != 200):
         raise Exception('HTTP request error. HTTP status code %i' % r.status_code)
     rjson = r.json()
@@ -36,4 +36,5 @@ if __name__ == '__main__':
         print('IP has changed. Pushing to server')
         puship(ip)
         print('Upstream push is finished. ')
-
+    else:
+        print('IP remains the same. Do nothing.')
