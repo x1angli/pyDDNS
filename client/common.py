@@ -1,4 +1,3 @@
-__author__ = 'x1ang.li'
 
 import requests
 
@@ -14,8 +13,9 @@ clicfg = {
 
 
 
-def reqplain(path):
+def reqget(path):
     return requests.get(clicfg['endpoint'] + path)
 
-def reqauthed(path):
+def reqgetauth(path):
     return requests.get(clicfg['endpoint'] + path, auth=(clicfg['username'], clicfg['password']))
+

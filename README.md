@@ -31,3 +31,15 @@ This python file has three modules:
         curl -X GET http://localhost:81/ping
     
 For other curl examples, see https://public-api.sonic.net/dyndns
+
+# Start using the client
+1. On the downstream machine, execute following commands
+ 
+        cd DDNS-chiasma
+        set PYTHONPATH=%PYTHONPATH%;.
+        python client/downstream.py
+1. On the upstream machine, execute following commands
+ 
+        cd DDNS-chiasma
+        set PYTHONPATH=%PYTHONPATH%;.
+        python client/upstream.py
