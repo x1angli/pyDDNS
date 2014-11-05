@@ -1,6 +1,7 @@
 __author__ = 'x1ang.li'
 
 from client.common import *
+import json
 
 def checkip():
     r = reqget('/ip')
@@ -24,7 +25,7 @@ def puship(newip):
     silo_id = clicfg['silo_id']
     dnsrecords = [ {'hostname':hostname, 'ip': newip} for hostname in clicfg['hostnames'] ] # Python list comprehension
     payload = {'id': silo_id, 'dnsrecords': dnsrecords}
-    r = requests.put('/silos/' + silo_id, data = payload, auth = (clicfg['username'], clicfg['password']))
+    r = requests.put(clicfg['endpoint'] + '/silos/' + silo_id, data = json.dumps(payload), auth = (clicfg['username'], clicfg['password']))
     if r.status_code != requests.codes.ok:
         raise Exception('Unable to call the server')
 
