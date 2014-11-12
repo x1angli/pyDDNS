@@ -2,6 +2,7 @@ import json
 from flask import Flask, request, abort, make_response, Response
 from sqlalchemy.orm.exc import NoResultFound
 from functools import wraps
+from werkzeug.contrib.fixers import ProxyFix
 
 from server.models import *
 
@@ -12,7 +13,8 @@ app.config.update(svrcfg['flask'])
 def loadData():
     pass
 
-def requires_auth(func):
+
+def authenticate(func):
     @wraps(func)
     def decorated(*args, **kwargs):
         auth = request.authorization
@@ -22,10 +24,31 @@ def requires_auth(func):
             user = session.query(User).filter(User.id == auth.username).one()
         except NoResultFound as e:
             abort(401, description="User {} doesn't exist! ".format(auth.username))
-        if (user.password != auth.password):
+        if user.password != auth.password:
             abort(401, description="Password of user {} is incorrect!".format(auth.username))
         return func(*args, **kwargs)
     return decorated
+
+
+def authenticate_authorize(role):
+    def wrapper(func):
+        @wraps(func)
+        def decorated(*args, **kwargs):
+            auth = request.authorization
+            if not auth:
+                abort(401, description="You must provide authentication information")
+            try:
+                user = session.query(User).filter(User.id == auth.username).one()
+            except NoResultFound:
+                abort(401, description="user {} doesn't exist! ".format(auth.username))
+            if user.password != auth.password:
+                abort(401, description="Password of user {} is incorrect!".format(auth.username))
+            if user.role_id != role:
+                abort(401, description="Unauthorized Access")
+            return func(*args, **kwargs)
+        return decorated
+    return wrapper
+
 
 def errorjson(error, status):
     responseobj = {"message": error.description, "http_code": status}
@@ -70,7 +93,13 @@ def initdb_command():
     init_schema()
 
     print('All tables created. Populating all data...')
-    user1 = User('cumuli', 'cumuli123')
+    roleadmin = Role('admin')
+    rolecommon = Role('common')
+    session.add(roleadmin)
+    session.add(rolecommon)
+    session.commit()
+
+    user1 = User('admin', 'cumuli', 'cumuli123')
     session.add(user1)
     session.commit()
 
@@ -115,7 +144,7 @@ def getip():
 
 @app.route('/silos', methods=['GET'])
 @jsonresp
-@requires_auth
+@authenticate_authorize('admin')
 def listsilos():
     result = session.query(Silo).all()
     return result
@@ -123,7 +152,7 @@ def listsilos():
 
 @app.route('/silos/<string:silo_id>', methods=['GET'])
 @jsonresp
-@requires_auth
+@authenticate_authorize('admin')
 def getsilo(silo_id):
     result = session.query(Silo).filter(Silo.id==silo_id).one()
     # session.commit()
@@ -131,7 +160,7 @@ def getsilo(silo_id):
 
 @app.route('/silos/<string:silo_id>', methods=['PUT'])
 @jsonresp
-@requires_auth
+@authenticate_authorize('admin')
 def putsilo(silo_id):
     try:
         reqjson = request.get_json(force=True, silent=True)
@@ -168,7 +197,7 @@ def putsilo(silo_id):
 
 @app.route('/silos/<string:silo_id>', methods=['DELETE'])
 @jsonresp
-@requires_auth
+@authenticate_authorize('admin')
 def deletesilo(silo_id):
     try:
         session.query(DnsRecord).filter(DnsRecord.silo_id==silo_id).delete()
