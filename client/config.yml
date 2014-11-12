@@ -1,0 +1,9 @@
+endpoint: http://localhost:5000
+username: cumuli
+password: cumuli123
+silo_id: silo1
+
+hostnames:
+- webserver
+- dbserver
+

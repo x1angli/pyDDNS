@@ -1,17 +1,7 @@
 
 import requests
 
-clicfg = {
-    'endpoint' : 'http://localhost:81',
-    'username' : 'cumuli',
-    'password' : 'cumuli123',
-    'silo_id'  : 'silo1',
-    'hostnames': [
-        'webserver', 'dbserver'
-    ]
-}
-
-
+from client.config import clicfg
 
 def reqget(path):
     return requests.get(clicfg['endpoint'] + path)
