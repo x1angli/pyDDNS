@@ -29,7 +29,8 @@ def updateHostFile():
 
     newlines = list(filter(shouldkeep, curlines))
     for dnsrecord in dnsrecordsjson:
-        newlines.append('{ip}\t{hostname}'.format(**dnsrecord))
+        if dnsrecord['hostname'] in clicfg['hostnames']:
+            newlines.append('{ip}\t{hostname}'.format(**dnsrecord))
     newfilestr = '\n'.join(newlines)     # Ironically, we shouldn't use `os.linesep` here.
     # Otherwise, the subsequent file.write() will add extra linebreaks.
 
