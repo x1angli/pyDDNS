@@ -63,3 +63,6 @@ target/
 .idea/
 *.iws
 /bin/
+
+# Mac stuff
+.DS_Store

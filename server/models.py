@@ -22,10 +22,12 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'user'
 
+    role_id = Column(String(20), ForeignKey('role.id'))
     id = Column(String(20), primary_key=True)
     password = Column(String(20))
 
-    def __init__(self, id, password):
+    def __init__(self, role_id, id, password):
+        self.role_id = role_id
         self.id = id
         self.password = password
 
@@ -34,6 +36,21 @@ class User(Base):
 
     def __repr__(self):
         return "<User(id='%s')>" % (self.id)
+
+class Role(Base):
+    __tablename__ = 'role'
+
+    id = Column(String(20), primary_key=True)
+    user_id = relationship("User", backref=backref("role", lazy="joined"))
+
+    def __init__(self, id):
+        self.id = id
+
+    def to_json(self):
+        return '{"rolename": "%s"}' % self.id
+
+    def __repr__(self):
+        return self.to_json()
 
 class Silo(Base):
     __tablename__ = 'silo'
