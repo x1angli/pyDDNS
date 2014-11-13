@@ -30,7 +30,7 @@ def authenticate(func):
     return decorated
 
 
-def authenticate_authorize(role):
+def authorize(role):
     def wrapper(func):
         @wraps(func)
         def decorated(*args, **kwargs):
@@ -43,11 +43,18 @@ def authenticate_authorize(role):
                 abort(401, description="user {} doesn't exist! ".format(auth.username))
             if user.password != auth.password:
                 abort(401, description="Password of user {} is incorrect!".format(auth.username))
-            if user.role_id != role:
+            if user.role != role:
                 abort(401, description="Unauthorized Access")
             return func(*args, **kwargs)
         return decorated
     return wrapper
+
+def getuser(request):
+    auth = request.authorization
+    if not auth:
+        abort(401, description="You must provide authentication information")
+    user = session.query(User).filter(User.id==auth.username).one()
+    return user
 
 
 def errorjson(error, status):
@@ -93,24 +100,26 @@ def initdb_command():
     init_schema()
 
     print('All tables created. Populating all data...')
-    roleadmin = Role('admin')
-    rolecommon = Role('common')
-    session.add(roleadmin)
-    session.add(rolecommon)
-    session.commit()
-
-    user1 = User('admin', 'cumuli', 'cumuli123')
+    user1 = User('cumuli', 'cumuli123', 'admin')
+    user2 = User('normal', 'normal123', 'common')
     session.add(user1)
+    session.add(user2)
     session.commit()
 
-    silo1 = Silo('silo1')
+    silo1 = Silo('silo1', 'cumuli')
+    silo2 = Silo('silo2', 'normal')
     session.add(silo1)
+    session.add(silo2)
     session.commit()
 
     webserver = DnsRecord('silo1', 'webserver', '127.0.0.1')
     dbserver = DnsRecord('silo1', 'dbserver', '127.0.0.1')
     session.add(webserver)
     session.add(dbserver)
+    webserver2 = DnsRecord('silo2', 'webserver', '127.0.0.1')
+    dbserver2 = DnsRecord('silo2', 'dbserver', '127.0.0.1')
+    session.add(webserver2)
+    session.add(dbserver2)
     session.commit()
 
     print('Initialized the database.')
@@ -144,7 +153,8 @@ def getip():
 
 @app.route('/silos', methods=['GET'])
 @jsonresp
-@authenticate_authorize('admin')
+@authenticate
+@authorize('admin')
 def listsilos():
     result = session.query(Silo).all()
     return result
@@ -152,23 +162,35 @@ def listsilos():
 
 @app.route('/silos/<string:silo_id>', methods=['GET'])
 @jsonresp
-@authenticate_authorize('admin')
+@authenticate
 def getsilo(silo_id):
-    result = session.query(Silo).filter(Silo.id==silo_id).one()
-    # session.commit()
-    return result
+    user = getuser(request)
+    try:
+        silo = session.query(Silo).filter(Silo.id==silo_id).one()
+    except NoResultFound:
+        abort(404, "%s not found" % silo_id)
+    if silo.user_id != user.id:
+        abort(404, "%s not found" % silo_id)
+    return silo
 
 @app.route('/silos/<string:silo_id>', methods=['PUT'])
 @jsonresp
-@authenticate_authorize('admin')
+@authenticate
 def putsilo(silo_id):
+    user = getuser(request)
+    try:
+        silo = session.query(Silo).filter(Silo.id==silo_id).one()
+    except NoResultFound:
+        abort(404, "%s not found" % silo_id)
+    if silo.user_id != user.id:
+        abort(404, "%s not found" % silo_id)
     try:
         reqjson = request.get_json(force=True, silent=True)
         if not reqjson:
             abort(400, 'The request must be a valid json')
         if not 'id' in reqjson:
             abort(400, 'The request body json must contain a valid "ip" field')
-        if (silo_id != reqjson['id']):
+        if silo_id != reqjson['id']:
             abort(403, 'The silo\'s id in request must match the one in URL. "%s" v.s. "%s"' % (silo_id, reqjson['id']) )
         if not 'dnsrecords' in reqjson:
             abort(400, 'The request body json must contain a valid "dnsrecords" field')
@@ -197,8 +219,15 @@ def putsilo(silo_id):
 
 @app.route('/silos/<string:silo_id>', methods=['DELETE'])
 @jsonresp
-@authenticate_authorize('admin')
+@authorize('admin')
 def deletesilo(silo_id):
+    user = getuser(request)
+    try:
+        silo = session.query(Silo).filter(Silo.id==silo_id).one()
+    except NoResultFound:
+        abort(404, "%s not found" % silo_id)
+    if silo.user_id != user.id:
+        abort(404, "%s not found" % silo_id)
     try:
         session.query(DnsRecord).filter(DnsRecord.silo_id==silo_id).delete()
         session.query(Silo).filter(Silo.id==silo_id).delete()
