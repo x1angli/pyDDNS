@@ -30,7 +30,7 @@ def authenticate(func):
     return decorated
 
 
-def authenticate_authorize(role):
+def authorize(role):
     def wrapper(func):
         @wraps(func)
         def decorated(*args, **kwargs):
@@ -103,6 +103,10 @@ def initdb_command():
     session.add(user1)
     session.commit()
 
+    user2 = User('common', 'common', 'common123')
+    session.add(user2)
+    session.commit()
+
     silo1 = Silo('silo1')
     session.add(silo1)
     session.commit()
@@ -144,7 +148,8 @@ def getip():
 
 @app.route('/silos', methods=['GET'])
 @jsonresp
-@authenticate_authorize('admin')
+@authorize('admin')
+@authenticate
 def listsilos():
     result = session.query(Silo).all()
     return result
@@ -152,7 +157,7 @@ def listsilos():
 
 @app.route('/silos/<string:silo_id>', methods=['GET'])
 @jsonresp
-@authenticate_authorize('admin')
+@authenticate
 def getsilo(silo_id):
     result = session.query(Silo).filter(Silo.id==silo_id).one()
     # session.commit()
@@ -160,7 +165,7 @@ def getsilo(silo_id):
 
 @app.route('/silos/<string:silo_id>', methods=['PUT'])
 @jsonresp
-@authenticate_authorize('admin')
+@authenticate
 def putsilo(silo_id):
     try:
         reqjson = request.get_json(force=True, silent=True)
@@ -168,7 +173,7 @@ def putsilo(silo_id):
             abort(400, 'The request must be a valid json')
         if not 'id' in reqjson:
             abort(400, 'The request body json must contain a valid "ip" field')
-        if (silo_id != reqjson['id']):
+        if silo_id != reqjson['id']:
             abort(403, 'The silo\'s id in request must match the one in URL. "%s" v.s. "%s"' % (silo_id, reqjson['id']) )
         if not 'dnsrecords' in reqjson:
             abort(400, 'The request body json must contain a valid "dnsrecords" field')
@@ -197,7 +202,7 @@ def putsilo(silo_id):
 
 @app.route('/silos/<string:silo_id>', methods=['DELETE'])
 @jsonresp
-@authenticate_authorize('admin')
+@authorize('admin')
 def deletesilo(silo_id):
     try:
         session.query(DnsRecord).filter(DnsRecord.silo_id==silo_id).delete()
