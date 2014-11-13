@@ -2,7 +2,6 @@ import json
 from flask import Flask, request, abort, make_response, Response
 from sqlalchemy.orm.exc import NoResultFound
 from functools import wraps
-from werkzeug.contrib.fixers import ProxyFix
 
 from server.models import *
 
@@ -153,7 +152,6 @@ def getip():
 
 @app.route('/silos', methods=['GET'])
 @jsonresp
-@authenticate
 @authorize('admin')
 def listsilos():
     result = session.query(Silo).all()
