@@ -49,6 +49,13 @@ def authorize(role):
         return decorated
     return wrapper
 
+def getuser(request):
+    auth = request.authorization
+    if not auth:
+        abort(401, description="You must provide authentication information")
+    user = session.query(User).filter(User.id==auth.username).one()
+    return user
+
 
 def errorjson(error, status):
     responseobj = {"message": error.description, "http_code": status}
@@ -100,21 +107,25 @@ def initdb_command():
     session.commit()
 
     user1 = User('admin', 'cumuli', 'cumuli123')
+    user2 = User('common', 'normal', 'normal123')
     session.add(user1)
-    session.commit()
-
-    user2 = User('common', 'common', 'common123')
     session.add(user2)
     session.commit()
 
-    silo1 = Silo('silo1')
+    silo1 = Silo('silo1', 'cumuli')
+    silo2 = Silo('silo2', 'normal')
     session.add(silo1)
+    session.add(silo2)
     session.commit()
 
     webserver = DnsRecord('silo1', 'webserver', '127.0.0.1')
     dbserver = DnsRecord('silo1', 'dbserver', '127.0.0.1')
     session.add(webserver)
     session.add(dbserver)
+    webserver2 = DnsRecord('silo2', 'webserver', '127.0.0.1')
+    dbserver2 = DnsRecord('silo2', 'dbserver', '127.0.0.1')
+    session.add(webserver2)
+    session.add(dbserver2)
     session.commit()
 
     print('Initialized the database.')
@@ -148,10 +159,13 @@ def getip():
 
 @app.route('/silos', methods=['GET'])
 @jsonresp
-@authorize('admin')
 @authenticate
 def listsilos():
-    result = session.query(Silo).all()
+    user = getuser(request)
+    if user.role_id == 'admin':
+        result = session.query(Silo).all()
+    else:
+        result = session.query(Silo).filter(Silo.user_id==user.id).one()
     return result
 
 
@@ -159,14 +173,26 @@ def listsilos():
 @jsonresp
 @authenticate
 def getsilo(silo_id):
-    result = session.query(Silo).filter(Silo.id==silo_id).one()
-    # session.commit()
-    return result
+    user = getuser(request)
+    try:
+        silo = session.query(Silo).filter(Silo.id==silo_id).one()
+    except NoResultFound:
+        abort(404, "%s not found" % silo_id)
+    if silo is None or silo.user_id != user.id:
+        abort(404, "%s not found" % silo_id)
+    return silo
 
 @app.route('/silos/<string:silo_id>', methods=['PUT'])
 @jsonresp
 @authenticate
 def putsilo(silo_id):
+    user = getuser(request)
+    try:
+        silo = session.query(Silo).filter(Silo.id==silo_id).one()
+    except NoResultFound:
+        abort(404, "%s not found" % silo_id)
+    if silo is None or silo.user_id != user.id:
+        abort(404, "%s not found" % silo_id)
     try:
         reqjson = request.get_json(force=True, silent=True)
         if not reqjson:
@@ -204,6 +230,13 @@ def putsilo(silo_id):
 @jsonresp
 @authorize('admin')
 def deletesilo(silo_id):
+    user = getuser(request)
+    try:
+        silo = session.query(Silo).filter(Silo.id==silo_id).one()
+    except NoResultFound:
+        abort(404, "%s not found" % silo_id)
+    if silo is None or silo.user_id != user.id:
+        abort(404, "%s not found" % silo_id)
     try:
         session.query(DnsRecord).filter(DnsRecord.silo_id==silo_id).delete()
         session.query(Silo).filter(Silo.id==silo_id).delete()
