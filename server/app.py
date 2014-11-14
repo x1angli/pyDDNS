@@ -13,23 +13,7 @@ def loadData():
     pass
 
 
-def authenticate(func):
-    @wraps(func)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth:
-            abort(401, description="You must provide authentication information")
-        try:
-            user = session.query(User).filter(User.id == auth.username).one()
-        except NoResultFound as e:
-            abort(401, description="User {} doesn't exist! ".format(auth.username))
-        if user.password != auth.password:
-            abort(401, description="Password of user {} is incorrect!".format(auth.username))
-        return func(*args, **kwargs)
-    return decorated
-
-
-def authorize(role):
+def authenticate(role=None):
     def wrapper(func):
         @wraps(func)
         def decorated(*args, **kwargs):
@@ -42,18 +26,11 @@ def authorize(role):
                 abort(401, description="user {} doesn't exist! ".format(auth.username))
             if user.password != auth.password:
                 abort(401, description="Password of user {} is incorrect!".format(auth.username))
-            if user.role != role:
+            if role is not None and user.role != role:
                 abort(401, description="Unauthorized Access")
-            return func(*args, **kwargs)
+            return func(*args, user=user, **kwargs)
         return decorated
     return wrapper
-
-def getuser(request):
-    auth = request.authorization
-    if not auth:
-        abort(401, description="You must provide authentication information")
-    user = session.query(User).filter(User.id==auth.username).one()
-    return user
 
 
 def errorjson(error, status):
@@ -152,17 +129,16 @@ def getip():
 
 @app.route('/silos', methods=['GET'])
 @jsonresp
-@authorize('admin')
-def listsilos():
+@authenticate('admin')
+def listsilos(user):
     result = session.query(Silo).all()
     return result
 
 
 @app.route('/silos/<string:silo_id>', methods=['GET'])
 @jsonresp
-@authenticate
-def getsilo(silo_id):
-    user = getuser(request)
+@authenticate()
+def getsilo(silo_id, user):
     try:
         silo = session.query(Silo).filter(Silo.id==silo_id).one()
     except NoResultFound:
@@ -173,9 +149,8 @@ def getsilo(silo_id):
 
 @app.route('/silos/<string:silo_id>', methods=['PUT'])
 @jsonresp
-@authenticate
-def putsilo(silo_id):
-    user = getuser(request)
+@authenticate()
+def putsilo(silo_id, user):
     try:
         silo = session.query(Silo).filter(Silo.id==silo_id).one()
     except NoResultFound:
@@ -217,9 +192,8 @@ def putsilo(silo_id):
 
 @app.route('/silos/<string:silo_id>', methods=['DELETE'])
 @jsonresp
-@authorize('admin')
-def deletesilo(silo_id):
-    user = getuser(request)
+@authenticate('admin')
+def deletesilo(silo_id, user):
     try:
         silo = session.query(Silo).filter(Silo.id==silo_id).one()
     except NoResultFound:
