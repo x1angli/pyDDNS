@@ -19,22 +19,22 @@ def authenticate(role=None):
         def decorated(*args, **kwargs):
             auth = request.authorization
             if not auth:
-                abort(401, description="You must provide authentication information")
+                abort(401, description='You must provide authentication information')
             try:
                 user = session.query(User).filter(User.id == auth.username).one()
             except NoResultFound:
-                abort(401, description="user {} doesn't exist! ".format(auth.username))
+                abort(401, description='The user {} does nott exist!'.format(auth.username))
             if user.password != auth.password:
-                abort(401, description="Password of user {} is incorrect!".format(auth.username))
+                abort(401, description='Password of user {} is incorrect!'.format(auth.username))
             if role is not None and user.role != role:
-                abort(401, description="Unauthorized Access")
+                abort(401, description='Unauthorized Access')
             return func(*args, user=user, **kwargs)
         return decorated
     return wrapper
 
 
 def errorjson(error, status):
-    responseobj = {"message": error.description, "http_code": status}
+    responseobj = {'message': error.description, 'http_code': status}
     return Response(to_json(responseobj), status=status, mimetype='application/json')
 
 
@@ -142,9 +142,9 @@ def getsilo(silo_id, user):
     try:
         silo = session.query(Silo).filter(Silo.id==silo_id).one()
     except NoResultFound:
-        abort(404, "%s not found" % silo_id)
+        abort(404, '%s not found' % silo_id)
     if silo.user_id != user.id:
-        abort(404, "%s not found" % silo_id)
+        abort(401, description='You do not have the access to the silo')
     return silo
 
 @app.route('/silos/<string:silo_id>', methods=['PUT'])
@@ -156,7 +156,7 @@ def putsilo(silo_id, user):
     except NoResultFound:
         abort(404, "%s not found" % silo_id)
     if silo.user_id != user.id:
-        abort(404, "%s not found" % silo_id)
+        abort(401, description='You do not have the access to the silo')
     try:
         reqjson = request.get_json(force=True, silent=True)
         if not reqjson:
@@ -199,7 +199,7 @@ def deletesilo(silo_id, user):
     except NoResultFound:
         abort(404, "%s not found" % silo_id)
     if silo.user_id != user.id:
-        abort(404, "%s not found" % silo_id)
+        abort(401, description='You do not have the access to the silo')
     try:
         session.query(DnsRecord).filter(DnsRecord.silo_id==silo_id).delete()
         session.query(Silo).filter(Silo.id==silo_id).delete()
