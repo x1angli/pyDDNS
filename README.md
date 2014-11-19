@@ -86,11 +86,36 @@ None
     
 ### *Get silos list
 
-unfinished
+ For each silo that include dnsrecorder. Even dnsrecorder in different webservice.
+####Request
+GET /silos
+#####Parameters
+None
+####JSON Result
+[
+{"id": "silo1", "dnsrecords": [
+{"hostname": "dbserver", "ip": "127.0.0.1"}, 
+{"hostname": "webserver", "ip": "127.0.0.1"}
+]}.
+{"id": "silo2", "dnsrecords": [
+{"hostname": "dbserver", "ip": "127.0.0.1"}, 
+{"hostname": "webserver", "ip": "127.0.0.1"}
+]}
+]
+
 
 ### *Get silo
 
-unfinished
+For different silo,only a silo_id mark. 
+####Request
+GET /silos/silo_id
+#####Parameters
+silo1
+####JSON Result
+{"id": "silo1", "dnsrecords": [
+{"hostname": "dbserver", "ip": "127.0.0.1"}, 
+{"hostname": "webserver", "ip": "127.0.0.1"}
+]}
     
 ## *Update silo
 
@@ -99,6 +124,5 @@ unfinished
 ### *delete silo
 
 unfinished
-
 
 
