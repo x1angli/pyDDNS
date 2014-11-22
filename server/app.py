@@ -56,7 +56,7 @@ def to_json(obj):
     if hasattr(obj, 'to_json'):
         return obj.to_json()
     if isinstance(obj, list):
-        return '[\r\n' + '.\r\n'.join(elem.to_json() for elem in obj) + '\r\n]'
+        return '[\r\n' + ',\r\n'.join(elem.to_json() for elem in obj) + '\r\n]'
     else:
         return json.dumps(obj)
 
