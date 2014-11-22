@@ -203,6 +203,7 @@ def deletesilo(silo_id, user):
     try:
         session.query(DnsRecord).filter(DnsRecord.silo_id==silo_id).delete()
         session.query(Silo).filter(Silo.id==silo_id).delete()
+        session.commit()
     except:
         session.rollback()
         raise
