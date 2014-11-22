@@ -7,15 +7,12 @@ A Dynamic DNS system that updates DNS records
 This Python project has three modules: 
 
 1. Server
-
 `Server` provide Restful API to get client IP, get silo list and maintain each silo.
 
 2. Upstream
-
 `Client/Upstream` can check public IP of local host, then update dns recoder of silo specified in `Client/config.yml`
 
 3. Downstream
-
 `Client/Downstream` can get dns recoder of silo specified in `Client/config.yml`, then modify local `host file` to change DNS rules.
 
 
