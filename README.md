@@ -6,14 +6,14 @@ A Dynamic DNS system that updates DNS records
 # Introduction
 This python file has three modules: 
 * Server
+`Server` provide Restful API to get client IP, get silo list and maintain each silo.
+
 * Upstream
-* Downstream
-
-`Server` provide Restful Api to get client IP, get silo list and maintain each silo
-
 `Client/Upstream` can check public IP of local host, then update dns recoder of silo specified in `Client/config.yml`
 
+* Downstream
 `Client/Downstream` can get dns recoder of silo specified in `Client/config.yml`, then modify local `host file` to change DNS rules.
+
 
 ## How does it work
 1. On the upstream machine
@@ -78,7 +78,7 @@ On the upstream machine, execute following commands
 
         curl -X GET http://localhost:5000/
         
-### ping()
+### ping
 A simple ping request to let you know things are working.
 
 1. Request
@@ -97,7 +97,7 @@ A simple ping request to let you know things are working.
         
         curl -X GET http://localhost:5000/ping
 
-### getip()
+### getip
 This allows you to get your current public ip address.   
 Note this may not work correctly if you are behind a proxy.
 
@@ -117,7 +117,7 @@ Note this may not work correctly if you are behind a proxy.
 
         curl -X GET http://localhost:5000/ip
 
-### listsilos(user)
+### listsilos
 For each silo that include dnsrecorder. Even dnsrecorder in different webservice.
  
 1. Request
@@ -145,7 +145,7 @@ For each silo that include dnsrecorder. Even dnsrecorder in different webservice
 
         curl -X GET http://localhost:5000/silos
 
-### getsilo(silo_id, user)
+### getsilo
 To get a silo by silo id.
 
 1. Request
@@ -167,7 +167,7 @@ To get a silo by silo id.
 
         curl -X GET http://localhost:5000/silos/silo1
 
-### putsilo(silo_id, user)
+### putsilo
 To update a silo by silo id.
 
 1. Request
