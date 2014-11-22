@@ -16,17 +16,22 @@ This python file has three modules:
 `Client/Downstream` can get dns recoder of silo specified in `Client/config.yml`, then modify local `host file` to change DNS rules.
 
 ## How does it work
-1. On the upstream machine
+### On the upstream machine
+1. Request `Get /ip` to check current public IP.
+2. Request `Get /silos/silo_id` to check if the ip address of dnsrecords has changed.
+3. If changed, Request `PUT /silos/silo_id` to update dnsrecords.
 
-1. On the downstream machine        
+### On the downstream machine
+1. Request `Get /silos/silo_id` to get dnsrecords.
+2. Change host file with dnsrecords.
 
-1. On the server
-
+### On the server
+Server uses web framework flask to build REST API.
 
 ## Installation
 1. Make sure Python is properly installed on all platforms (i.e. Server, Upstream, Downstream)
-1. Modify the `/server/config.yml` file to change DB setting, and `/client/config.yml` file to specify Server and DNS details
-1. Execute following commands
+2. Modify the `/server/config.yml` file to change DB setting, and `/client/config.yml` file to specify Server and DNS details
+3. Execute following commands
 
         pip install -r requirements.txt
         flask --app=server.app initdb
@@ -39,8 +44,8 @@ This python file has three modules:
         set PYTHONPATH=%PYTHONPATH%;.
         python server/app.py
         
-1. Open your browser, visit `http://localhost:81/ping`, and you would get the ping-pong JSON.
-1. Alternatively, use `curl` to get it:
+2. Open your browser, visit `http://localhost:81/ping`, and you would get the ping-pong JSON.
+3. Alternatively, use `curl` to get it:
 
         curl -X GET http://localhost:81/ping
     
@@ -59,6 +64,25 @@ On the upstream machine, execute following commands
         set PYTHONPATH=%PYTHONPATH%;.
         python client/upstream.py
         
+#### Notice
+The command above is executed in Windows environment.But in Linux environment, the command, reference and separator for environment variable to set PYTHONPATH are different.
+
+1. Windows
+use `set` command
+use `% %` to reference the environment variable
+use `;` as the separator
+
+        set PYTHONPATH=%PYTHONPATH%;.
+        
+2. Linux
+use `export` command
+use `$` to reference the environment variable
+use `:` as the separator
+
+        export PYTHONPATH=$PYTHONPATH:.
+        
+Please use the correct command to set PYTHONPATH according to your system environment.
+
 ## RESTful API Specification
 ### getindex()
 
