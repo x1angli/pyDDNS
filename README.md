@@ -67,17 +67,17 @@ On the upstream machine, execute following commands
 #### Notice
 The command above is executed in Windows environment.But in Linux environment, the command, reference and separator for environment variable to set PYTHONPATH are different.
 
-* Windows
-1. use `set` command
-2. use `% %` to reference the environment variable
-3. use `;` as the separator
+**Windows**
+* use `set` command
+* use `% %` to reference the environment variable
+* use `;` as the separator
 
         set PYTHONPATH=%PYTHONPATH%;.
         
-* Linux
-1. use `export` command
-2. use `$` to reference the environment variable
-3. use `:` as the separator
+**Linux**
+* use `export` command
+* use `$` to reference the environment variable
+* use `:` as the separator
 
         export PYTHONPATH=$PYTHONPATH:.
         
