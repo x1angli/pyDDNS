@@ -17,10 +17,10 @@ This python file has three modules:
 
 ## How does it work
 ### On the upstream machine
-On the upstream machine, it check current public IP, and send `Get /silos/silo_id` request to check if the ip address of dnsrecords has changed. If the ip address of dnsrecords has changed, upstream machine will send `PUT /silos/silo_id` request to update dnsrecords.
+On the upstream machine, it checks current public IP, and sends `Get /silos/silo_id` request to check if the ip address of dnsrecords has changed. If the ip address of dnsrecords has changed, upstream machine will send `PUT /silos/silo_id` request to update dnsrecords.
 
 ### On the downstream machine
-On the downstream machine, it send `Get /silos/silo_id` request to get dnsrecords, and change the host file with dnsrecords.
+On the downstream machine, it sends `Get /silos/silo_id` request to get dnsrecords, and changes the host file with dnsrecords.
 
 ### On the server
 Server uses web framework flask to build REST API.For details, please read the "RESTful API Specification" section.
