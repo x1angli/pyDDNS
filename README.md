@@ -32,7 +32,7 @@ Server uses web framework flask to build REST API.For details, please read the "
 
     pip install -r requirements.txt
     flask --app=server.app initdb
-
+    
 
 ## Start using the server
 1. Execute following commands
@@ -40,11 +40,13 @@ Server uses web framework flask to build REST API.For details, please read the "
     cd DDNS-chiasma
     set PYTHONPATH=%PYTHONPATH%;.
     python server/app.py
-
+    
+    
 2. Open your browser, visit `http://localhost:81/ping`, and you would get the ping-pong JSON.
 3. Alternatively, use `curl` to get it:
 
     curl -X GET http://localhost:81/ping
+    
     
 ## Start using the client
 ### Downstream (End user)
