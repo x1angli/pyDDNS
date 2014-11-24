@@ -2,13 +2,13 @@ __author__ = 'x1ang.li'
 
 from client.common import *
 import json
+import socket
 
 def checkip():
-    r = reqget('/ip')
-    if (r.status_code != 200):
-        raise Exception('HTTP request error. HTTP status code %i' % r.status_code)
-    rjson = r.json()
-    ip = rjson['ip']
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect((clicfg['endpoint'], 80))
+    ip = s.getsockname()[0]
+    s.close()
     return ip
 
 def haschanged(newip):

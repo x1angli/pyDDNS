@@ -56,7 +56,7 @@ def to_json(obj):
     if hasattr(obj, 'to_json'):
         return obj.to_json()
     if isinstance(obj, list):
-        return '[\r\n' + '.\r\n'.join(elem.to_json() for elem in obj) + '\r\n]'
+        return '[\r\n' + ',\r\n'.join(elem.to_json() for elem in obj) + '\r\n]'
     else:
         return json.dumps(obj)
 
@@ -203,6 +203,7 @@ def deletesilo(silo_id, user):
     try:
         session.query(DnsRecord).filter(DnsRecord.silo_id==silo_id).delete()
         session.query(Silo).filter(Silo.id==silo_id).delete()
+        session.commit()
     except:
         session.rollback()
         raise
