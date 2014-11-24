@@ -36,11 +36,11 @@ Server uses web framework flask to build REST API.For details, please read the "
 
 ## Start using the server
 1. Execute following commands
- 
+
     cd DDNS-chiasma
     set PYTHONPATH=%PYTHONPATH%;.
     python server/app.py
-    
+
 2. Open your browser, visit `http://localhost:81/ping`, and you would get the ping-pong JSON.
 3. Alternatively, use `curl` to get it:
 
