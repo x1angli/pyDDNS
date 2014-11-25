@@ -1,4 +1,4 @@
-endpoint: http://localhost:5000
+endpoint: http://localhost:81
 username: cumuli
 password: cumuli123
 silo_id: silo1
@@ -7,3 +7,5 @@ hostnames:
 - webserver
 - dbserver
 
+# Set this true, if Upstream Machine is behind a router.
+behindrouter: true
