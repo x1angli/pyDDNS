@@ -35,16 +35,14 @@ Server uses web framework flask to build REST API.For details, please read the "
 ## Start using the server
 1. Execute following commands
 
-
-    cd DDNS-chiasma
-    set PYTHONPATH=%PYTHONPATH%;.
-    python server/app.py
+        cd DDNS-chiasma
+        set PYTHONPATH=%PYTHONPATH%;.
+        python server/app.py
     
 2. Open your browser, visit `http://localhost:81/ping`, and you would get the ping-pong JSON.
 3. Alternatively, use `curl` to get it:
 
-
-    curl -X GET http://localhost:81/ping
+        curl -X GET http://localhost:81/ping
 
 ## Start using the client
 ### Downstream (End user)
@@ -70,21 +68,19 @@ The command above is executed in Windows environment.But in Linux environment, t
 * use `% %` to reference the environment variable
 * use `;` as the separator
 
-
-    set PYTHONPATH=%PYTHONPATH%;.
+        set PYTHONPATH=%PYTHONPATH%;.
 
 **Linux**
 * use `export` command
 * use `$` to reference the environment variable
 * use `:` as the separator
 
-
-    export PYTHONPATH=$PYTHONPATH:.
+        export PYTHONPATH=$PYTHONPATH:.
 
 Please use the correct command to set PYTHONPATH according to your system environment.
 
 ## RESTful API Specification
-### getindex()
+### Get index
 
 1. Request
 
@@ -92,7 +88,7 @@ Please use the correct command to set PYTHONPATH according to your system enviro
 
 2. Parameters
 
-    None.
+    None
 
 3. JSON Result
 
@@ -103,7 +99,7 @@ Please use the correct command to set PYTHONPATH according to your system enviro
     `curl -X GET http://localhost:5000/`
 
 
-### ping()
+### Ping the server
 A simple ping request to let you know things are working.
 
 1. Request
@@ -122,7 +118,7 @@ A simple ping request to let you know things are working.
 
     `curl -X GET http://localhost:5000/ping`
 
-### getip()
+### Getting your ip address
 This allows you to get your current public ip address.   
 Note this may not work correctly if you are behind a proxy.
 
@@ -142,7 +138,7 @@ Note this may not work correctly if you are behind a proxy.
 
     `curl -X GET http://localhost:5000/ip`
 
-### listsilos(user)
+### Get silos list
 For each silo that include dnsrecorder. Even dnsrecorder in different webservice.
  
 1. Request
@@ -155,25 +151,23 @@ For each silo that include dnsrecorder. Even dnsrecorder in different webservice
     
 3. JSON Result
 
-
-    [
-    {"id": "silo1", "dnsrecords": [
-    {"hostname": "dbserver", "ip": "127.0.0.1"}, 
-    {"hostname": "webserver", "ip": "127.0.0.1"}
-    ]}.
-    {"id": "silo2", "dnsrecords": [
-    {"hostname": "dbserver", "ip": "127.0.0.1"}, 
-    {"hostname": "webserver", "ip": "127.0.0.1"}
-    ]}
-    ]
-
+        [
+        {"id": "silo1", "dnsrecords": [
+        {"hostname": "dbserver", "ip": "127.0.0.1"}, 
+        {"hostname": "webserver", "ip": "127.0.0.1"}
+        ]}.
+        {"id": "silo2", "dnsrecords": [
+        {"hostname": "dbserver", "ip": "127.0.0.1"}, 
+        {"hostname": "webserver", "ip": "127.0.0.1"}
+        ]}
+        ]
 
 4. Curl Example
 
     `curl -X GET http://localhost:5000/silos`
 
 
-### getsilo(silo_id, user)
+### Get single silo
 To get a silo by silo id.
 
 1. Request
@@ -182,25 +176,21 @@ To get a silo by silo id.
 
 2. Parameters
 
-
     `silo_id`
-
 
 3. JSON Result
 
-
-    {"id": "silo1", "dnsrecords": [
-    {"hostname": "dbserver", "ip": "127.0.0.1"}, 
-    {"hostname": "webserver", "ip": "127.0.0.1"}
-    ]}
-
+        {"id": "silo1", "dnsrecords": [
+        {"hostname": "dbserver", "ip": "127.0.0.1"}, 
+        {"hostname": "webserver", "ip": "127.0.0.1"}
+        ]}
 
 4. Curl Example
 
     `curl -X GET http://localhost:5000/silos/silo1`
 
 
-### putsilo(silo_id, user)
+### Update silo
 To update a silo by silo id.
 
 1. Request
@@ -211,27 +201,24 @@ To update a silo by silo id.
 
     `silo_id`
 
-
 3. JSON Result
 
-
-    {"id": "silo1", "dnsrecords": [
-    {"hostname": "dbserver", "ip": "127.0.0.1"}, 
-    {"hostname": "webserver", "ip": "127.0.0.1"}
-    ]}
-
+        {"id": "silo1", "dnsrecords": [
+        {"hostname": "dbserver", "ip": "127.0.0.1"}, 
+        {"hostname": "webserver", "ip": "127.0.0.1"}
+        ]}
 
 4. Curl Example
+    
     `curl -X PUT http://localhost:5000/silos/silo1`
 
 
-### deletesilo(silo_id, user)
+### Delete silo
 To delete a silo by silo id.
 
 1. Request
 
     `DELETE /silos/silo_id`
-
 
 2. Parameters
 
@@ -244,4 +231,3 @@ To delete a silo by silo id.
 4. Curl Example
 
     `curl -X DELETE http://localhost:5000/silos/silo1`
-
