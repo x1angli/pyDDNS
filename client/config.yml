@@ -7,5 +7,5 @@ hostnames:
 - webserver
 - dbserver
 
-# Set this true, if Upstream Machine is behind a router.
-behindrouter: true
+# this can only be Socket or ServerApi
+getIpFrom: ServerApi
