@@ -235,6 +235,6 @@ To delete a silo by silo id.
         
 # New Feature
 **2014-11-26**
-New entry in setting file client/config.yml : `getIpFrom`
 
+New entry in setting file client/config.yml : `getIpFrom`
 Set to `Socket`, if your upstream machine has an independent public IP. Otherwise, setting to `ServerApi` may work in your situation.
