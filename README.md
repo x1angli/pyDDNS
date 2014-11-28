@@ -18,6 +18,7 @@ This python file has three modules:
 ## How does it work
 ### On the upstream machine
 There is a file named `client/config.yml` to store Server and DNS details. `client/upstream` can checks current public IP, and sends `Get /silos/silo_id` request to check if the ip address of dns records has changed. If the ip address of dns records has changed, it will send `PUT /silos/silo_id` request to update dns recoder of silo specified in `client/config.yml`.
+
 The setting file `client/config.yml` provides a entry named `getIpFrom`. Set to `Socket`, if your upstream machine has an independent public IP. Otherwise, setting to `ServerApi` may work in your situation.
 
 ### On the downstream machine
@@ -85,33 +86,24 @@ Please use the correct command to set PYTHONPATH according to your system enviro
 ## How to run it automatically
 If you want to run it automatically, please read this section and follow the instructions to set your computer settings.
 
-### Task Scheduler on Windows
-The Task Scheduler enables you to automatically perform routine tasks on a chosen computer. The Task Scheduler does this by monitoring whatever criteria you choose to initiate the tasks (referred to as triggers) and then executing the tasks when the criteria is met.
+### Task Scheduler in Windows
+Task Scheduler enables you to automatically perform routine tasks on a chosen computer. Task Scheduler does this by monitoring whatever criteria you choose to initiate the tasks and then executing the tasks when the criteria is met.
 
-1. Open Task Scheduler by clicking the **Start** button, clicking **Control Panel**, clicking **System and Security**, clicking **Administrative Tools**, and then double-clicking **Task Scheduler**. Administrator permission required If you're prompted for an administrator password or confirmation, type the password or provide confirmation.
-
+1. Open Task Scheduler by clicking the **Start** button, clicking **Control Panel**, clicking **System and Security**, clicking **Administrative Tools**, and then double-clicking **Task Scheduler**. 
 2. Click the **Action** menu, and then click **Create Basic Task**.
-
 3. Type a name for the task and an optional description, and then click **Next**.
-
 4. Do one of the following:
-
-    * To select a schedule based on the calendar, click Daily, Weekly, Monthly, or One time, click Next; specify the schedule you want to use, and then click Next.
-    
-    * To select a schedule based on common recurring events, click When the computer starts or When I log on, and then click Next.
-    
-    * To select a schedule based on specific events, click When a specific event is logged, click Next; specify the event log and other information using the drop-down lists, and then click Next.
-
+    * To select a schedule based on the calendar, click **Daily**, **Weekly**, **Monthly**, or **One time**, click **Next**; specify the schedule you want to use, and then click **Next**.
+    * To select a schedule based on common recurring events, click **When the computer starts** or **When I log on**, and then click **Next**.
+    * To select a schedule based on specific events, click **When a specific event is logged**, click **Next**; specify the event log and other information using the drop-down lists, and then click **Next**.
 5. To schedule a program to start automatically, click **Start a program**, and then click **Next**.
-
 6. Click **Browse** to find the program you want to start, and then click **Next**.
-
 7. Click **Finish**.
 
 For more details about Task Scheduler, please click [here](http://windows.microsoft.com/en-US/windows/schedule-task#1TC=windows-7).
 
-### Cron job on Linux
-Cron job are used to schedule commands to be executed periodically. You can setup commands or scripts, which will repeatedly run at a set time. Cron is one of the most useful tool in Linux or UNIX like operating systems. The cron service (daemon) runs in the background and constantly checks the `/etc/crontab` file, and `/etc/cron.*/` directories. It also checks the `/var/spool/cron/` directory.
+### Cron job in Linux
+Cron job are used to schedule commands to be executed periodically. You can setup commands or scripts, which will repeatedly run at a set time. Cron is one of the most useful tool in Linux. 
 
 To edit your crontab file, type the following command at the UNIX / Linux shell prompt:
 
@@ -119,29 +111,25 @@ To edit your crontab file, type the following command at the UNIX / Linux shell 
     
 The syntax is:
 
-    1 2 3 4 5 /path/to/command arg1 arg2
+    1 2 3 4 5 /path/to/command
     
 Where,
-1: Minute (0-59)
-2: Hours (0-23)
-3: Day (0-31)
-4: Month (0-12 [12 == December])
-5: Day of the week(0-7 [7 or 0 == sunday])
-/path/to/command - Script or command name to schedule
+* 1: Minute (0-59)
+* 2: Hours (0-23)
+* 3: Day (0-31)
+* 4: Month (0-12 [12 == December])
+* 5: Day of the week(0-7 [7 or 0 == sunday])
+* /path/to/command - Script or command name to schedule
 
-An operator allows you to specifying multiple values in a field. There are three operators:
-
-1. The asterisk (*) : This operator specifies all possible values for a field. For example, an asterisk in the hour time field would be equivalent to every hour or an asterisk in the month field would be equivalent to every month.
-
-2. The comma (,) : This operator specifies a list of values, for example: "1,5,10,15,20, 25".
-
-3. The dash (-) : This operator specifies a range of values, for example: "5-15" days , which is equivalent to typing "5,6,7,8,9,....,13,14,15" using the comma operator.
-
-4. The separator (/) : This operator specifies a step value, for example: "0-23/" can be used in the hours field to specify command execution every other hour. Steps are also permitted after an asterisk, so if you want to say every two hours, just use */2.
+operator allows you to specifying multiple values in a field. There are three operators:
+* The asterisk (*) : This operator specifies all possible values for a field
+* The comma (,) : This operator specifies a list of values
+* The dash (-) : This operator specifies a range of values
+* The separator (/) : This operator specifies a step value
 
 For example, if we want `client/downstream.py` to be executed every 2 hours, we should enter:
 
-    * * * 2 * /path/to/command/client/downstream.py
+    0 */2 * * * /path/to/command/client/downstream.py
     
 For more details about cron, please click [here](http://www.cyberciti.biz/faq/how-do-i-add-jobs-to-cron-under-linux-or-unix-oses/).
 
