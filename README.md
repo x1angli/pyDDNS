@@ -27,7 +27,7 @@ The setting file `client/config.yml` provides a entry named `getIpFrom`. Set to 
 ### On the server
 `server` provide Restful API to get client IP, get silo list and maintain each silo. And there is also a file named `client/config.yml` to store DB settings like `username`, you can modify settings in the file for your actual situation. 
 
-`server` uses web framework Flask to build RESTful API. For more details, please read the "RESTful API Specification" section.
+`server` uses web framework Flask to build RESTful API. For more details, please read the [RESTful API Specification](#api) section.
 
 ## Installation
 1. Make sure Python is properly installed on all platforms (i.e. Server, Upstream, Downstream)
@@ -134,6 +134,7 @@ For example, if we want `client/downstream.py` to be executed every 2 hours, we 
 For more details about cron, please click [here](http://www.cyberciti.biz/faq/how-do-i-add-jobs-to-cron-under-linux-or-unix-oses/).
 
 ## RESTful API Specification
+<span id="api">This is a brief specification about RESTful API in `server` module.</span>
 ### Get index
 
 1. Request
