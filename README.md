@@ -9,7 +9,7 @@ This python file has three modules:
 * Upstream
 * Downstream
 
-`Server` provides Restful API to get client IP, get silo list and maintain each silo
+`server` provides Restful API to get client IP, get silo list and maintain each silo
 
 `client/upstream` can check public IP of local host, then update dns recoder of silo specified in `client/config.yml`
 
@@ -105,7 +105,7 @@ For more details about Task Scheduler, please click [here](http://windows.micros
 ### Cron job in Linux
 Cron job are used to schedule commands to be executed periodically. You can setup commands or scripts, which will repeatedly run at a set time. Cron is one of the most useful tool in Linux. 
 
-To edit your crontab file, type the following command at the UNIX / Linux shell prompt:
+To edit your crontab file, type the following command at the Linux shell prompt:
 
     $ crontab -e
     
@@ -284,3 +284,6 @@ To delete a silo by silo id.
 4. Curl Example
 
         curl -X DELETE http://localhost:5000/silos/silo1
+        
+# Glossary
+To be updated.
