@@ -8,33 +8,27 @@ This python file has the following three modules:
 
 1. server
 
-    `server` module used in the Sever. 
-    
-    `server` provides RESTful APIs to get some silo information so that we can use these APIs to get client IP, get silo list or maintain each silo.
+    `server` module used in the Sever. `server` provides RESTful APIs to get some silo information so that we can use these APIs to get client IP, get silo list or maintain each silo.
 
 2. upstream
 
-    `client/upstream` module used in the upstream computer.
-
-    The upstream computer normally has an ever-changing IP. To keep track of the dynamic IP, we need to execute the upstream Python module from time to time. Once the upstream module is executed, it retrieves the IP of itself. If the IP address has changed, it would update the DNS record specified in the configuration file.
+    `client/upstream` module used in the upstream machine. The upstream machine normally has an ever-changing IP. To keep track of the dynamic IP, we need to execute the upstream Python module from time to time. Once the upstream module is executed, it retrieves the IP of itself. If the IP address has changed, it will update the DNS record specified in the configuration file.
 
 3. downstream
 
-    `client/downstream` module used in the downstream computer.
-
-    Since the local host file should be , we must execute the downstream Python module. `client/downstream` can get DNS record specified in its configuration file, and then modify the local host file to change DNS rules without any manual modification.
+    `client/downstream` module used in the downstream machine. Since the local host file should be latest, we must execute the downstream Python module. `client/downstream` can get DNS record specified in its configuration file, and then modify the local host file to change DNS rules without any manual modification.
 
 ## How it works
 ### On the upstream machine
 `client/upstream` has a configuration file named `client/config.yml` to store Server and DNS details. Besides, `client/config.yml` provides a entry named `getIpFrom`. If the upstream machine has an independent public IP, it will set to `Socket`, otherwise set to `ServerApi`.
 
-When we execute `client/upstream` in the upstream computer, it will send `Get /silos/silo_id` request to retrieve the IP of itself. If the IP address has changed, it will continue to send `PUT /silos/silo_id` request to update DNS record specified in `client/config.yml`. So finally, we can get a latest configuration file on the upstream machine.
+When we execute `client/upstream` in the upstream machine, it will send `Get /silos/silo_id` request to retrieve the IP of itself. If the IP address has changed, it will continue to send `PUT /silos/silo_id` request to update DNS record specified in `client/config.yml`. So finally, we can get a latest configuration file on the upstream machine.
 
 ### On the downstream machine
-In the upstream machine, we just get a latest configuration file but not the local host file which stores DNS rules, so we must execute `client/downstream` on the downstream computer. First, `client/downstream` sends `Get /silos/silo_id` request to get DNS record of silo specified in `client/config.yml`. And then, it will modify the local host file to change DNS rules to the latest version.
+In the upstream machine, we just get a latest configuration file but not the local host file which stores DNS rules, so we must execute `client/downstream` on the downstream machine. First, `client/downstream` sends `Get /silos/silo_id` request to get DNS record of silo specified in `client/config.yml`. And then, it will modify the local host file to change DNS rules to the latest version.
 
 ### On the server
-`server` provides RESTful API to get client IP, get silo list or maintain each silo. And there is also a file named `client/config.yml` to store DB settings like `username`, we can modify settings in the file for our actual situation. 
+`server` provides RESTful API to get client IP, get silo list or maintain each silo. And there is also a file named `client/config.yml` to store DB settings like `username`, so we can modify settings in the file for our actual situation. 
 
 `server` uses web framework Flask to build RESTful API. For more details, please read the "RESTful API Specification" section.
 
@@ -307,9 +301,7 @@ This section provides some explanation about few terms mentioned above.
 
 3. Silo
 
-    The silo used to record the DNS information. Each silo has a unique ID, and each ID corresponds to a Sever. The silo may contiains more than one DNS record, and each DNS record contains hostname and IP address. 
-    
-    We can get different silo information by different RESTful API on the Server.
+    The silo used to record the DNS information. Each silo has a unique ID, and each ID corresponds to a Sever. The silo may contiains more than one DNS record, and each DNS record contains hostname and IP address. We can get different silo information by different RESTful API on the Server.
 
 [scheduler]: http://windows.microsoft.com/en-US/windows/schedule-task#1TC=windows-7 "Schedule a task"
 [cron]: http://www.cyberciti.biz/faq/how-do-i-add-jobs-to-cron-under-linux-or-unix-oses/ "HowTo: Add Jobs To cron Under Linux or UNIX?"
