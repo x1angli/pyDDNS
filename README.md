@@ -7,28 +7,31 @@ A Dynamic DNS system that updates DNS records.
 This python file has the following three modules: 
 
 1. server
+
     `server` module used in the Sever. 
     
     `server` provides RESTful APIs to get some silo information so that we can use these APIs to get client IP, get silo list or maintain each silo.
 
 2. upstream
-    `upstream` module used in the upstream computer.
+
+    `client/upstream` module used in the upstream computer.
 
     The upstream computer normally has an ever-changing IP. To keep track of the dynamic IP, we need to execute the upstream Python module from time to time. Once the upstream module is executed, it retrieves the IP of itself. If the IP address has changed, it would update the DNS record specified in the configuration file.
 
 3. downstream
-    `downstream` module used in the downstream computer.
 
-    Since we don't know if the IP of upstream computer has changed, we must execute the downstream Python module. `downstream` can get DNS record specified in its configuration file, and then modify the local host file to change DNS rules without any manual modification.
+    `client/downstream` module used in the downstream computer.
+
+    Since the local host file should be , we must execute the downstream Python module. `client/downstream` can get DNS record specified in its configuration file, and then modify the local host file to change DNS rules without any manual modification.
 
 ## How it works
 ### On the upstream machine
-`client/upstream` has a configuration file named `client/config.yml` to store Server and DNS details. Besides, `client/config.yml` provides a entry named `getIpFrom`. If the upstream machine has an independent public IP, it will set to `Socket`. Otherwise, setting to `ServerApi`.
+`client/upstream` has a configuration file named `client/config.yml` to store Server and DNS details. Besides, `client/config.yml` provides a entry named `getIpFrom`. If the upstream machine has an independent public IP, it will set to `Socket`, otherwise set to `ServerApi`.
 
-When we execute `client/upstream` in the upstream computer, it will send `Get /silos/silo_id` request to retrieve the IP of itself. If the IP address has changed, it will continue to send `PUT /silos/silo_id` request to update DNS record of silo specified in `client/config.yml`. So finally, we can get a latest configuration file on the upstream machine.
+When we execute `client/upstream` in the upstream computer, it will send `Get /silos/silo_id` request to retrieve the IP of itself. If the IP address has changed, it will continue to send `PUT /silos/silo_id` request to update DNS record specified in `client/config.yml`. So finally, we can get a latest configuration file on the upstream machine.
 
 ### On the downstream machine
-In the last part of this section, we just get a latest yml file but not the local host file which stores DNS rules, so we must execute `client/downstream` on the upstream computer. First, `client/downstream` sends `Get /silos/silo_id` request to get DNS record of silo specified in `client/config.yml`. And then, it will modify the local host file to change DNS rules.
+In the upstream machine, we just get a latest configuration file but not the local host file which stores DNS rules, so we must execute `client/downstream` on the downstream computer. First, `client/downstream` sends `Get /silos/silo_id` request to get DNS record of silo specified in `client/config.yml`. And then, it will modify the local host file to change DNS rules to the latest version.
 
 ### On the server
 `server` provides RESTful API to get client IP, get silo list or maintain each silo. And there is also a file named `client/config.yml` to store DB settings like `username`, we can modify settings in the file for our actual situation. 
@@ -295,15 +298,18 @@ To delete a silo by silo id.
 This section provides some explanation about few terms mentioned above. 
 
 1. Sever
-    As a Sever, it should have a static IP or static domain. Besides, it is necessary for Server to be installed database like SQLite or MySQL. 
 
-2. Upstream
-    Upstream normally has an ever-changing IP.
+    As a Sever, it should have a static IP. Besides, it is necessary for Server to be installed the database like SQLite or MySQL. 
+    
+2. Upstream & Downstream
+
+    Unlike Sever, the Upstream normally has an ever-changing IP. So the Upstream updates the DNS record specified in the configuration file，and the Downstream get DNS record from it. It makes the DNS rules of local host file on Downstream is consonant with the Upstream IP address.
 
 3. Silo
-    The silo used to record the DNS information.
+
+    The silo used to record the DNS information. Each silo has a unique ID, and each ID corresponds to a Sever. The silo may contiains more than one DNS record, and each DNS record contains hostname and IP address. 
     
-    Each silo has a unique ID, and each ID corresponds to a Sever. The silo may contiains more than one DNS record, each DNS record contains hostname and IP address. You can get different silo information by using different RESTful API.
+    We can get different silo information by different RESTful API on the Server.
 
 [scheduler]: http://windows.microsoft.com/en-US/windows/schedule-task#1TC=windows-7 "Schedule a task"
 [cron]: http://www.cyberciti.biz/faq/how-do-i-add-jobs-to-cron-under-linux-or-unix-oses/ "HowTo: Add Jobs To cron Under Linux or UNIX?"
