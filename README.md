@@ -1,31 +1,34 @@
 DDNS-chiasma
 ============
 
-A Dynamic DNS system that updates DNS records 
+A Dynamic DNS system that updates DNS records. 
 
 # Introduction
-This python file has three modules: 
-* Server
-* Upstream
-* Downstream
+This python file has the following three modules: 
 
-`server` provides Restful API to get client IP, get silo list and maintain each silo
+1. server
 
-`client/upstream` can check public IP of local host, then update dns recoder of silo specified in `client/config.yml`
+    `server` module used in the Sever. `server` provides RESTful APIs to get some silo information so that we can use these APIs to get client IP, get silo list or maintain each silo.
 
-`client/downstream` can get dns recoder of silo specified in `client/config.yml`, then modify local host file to change DNS rules.
+2. upstream
 
-## How does it work
+    `client/upstream` module used in the upstream machine. The upstream machine normally has an ever-changing IP. To keep track of the dynamic IP, we need to execute the upstream Python module from time to time. Once the upstream module is executed, it retrieves the IP of itself. If the IP address has changed, it will update the DNS record specified in the configuration file.
+
+3. downstream
+
+    `client/downstream` module used in the downstream machine. Since the local host file should be latest, we must execute the downstream Python module. `client/downstream` can get DNS record specified in its configuration file, and then modify the local host file to change DNS rules without any manual modification.
+
+## How it works
 ### On the upstream machine
-There is a file named `client/config.yml` to store Server and DNS details. `client/upstream` can checks current public IP, and sends `Get /silos/silo_id` request to check if the ip address of dns records has changed. If the ip address of dns records has changed, it will send `PUT /silos/silo_id` request to update dns recoder of silo specified in `client/config.yml`.
+`client/upstream` has a configuration file named `client/config.yml` to store Server and DNS details. Besides, `client/config.yml` provides a entry named `getIpFrom`. If the upstream machine has an independent public IP, it will set to `Socket`, otherwise set to `ServerApi`.
 
-The setting file `client/config.yml` provides a entry named `getIpFrom`. Set to `Socket`, if your upstream machine has an independent public IP. Otherwise, setting to `ServerApi` may work in your situation.
+When we execute `client/upstream` in the upstream machine, it will send `Get /silos/silo_id` request to retrieve the IP of itself. If the IP address has changed, it will continue to send `PUT /silos/silo_id` request to update DNS record specified in `client/config.yml`. So finally, we can get a latest configuration file on the upstream machine.
 
 ### On the downstream machine
-`client/downstream` sends `Get /silos/silo_id` request to get dns recoder of silo specified in `client/config.yml` mentioned above, and modify local host file to change DNS rules.
+In the upstream machine, we just get a latest configuration file but not the local host file which stores DNS rules, so we must execute `client/downstream` on the downstream machine. First, `client/downstream` sends `Get /silos/silo_id` request to get DNS record of silo specified in `client/config.yml`. And then, it will modify the local host file to change DNS rules to the latest version.
 
 ### On the server
-`server` provide Restful API to get client IP, get silo list and maintain each silo. And there is also a file named `client/config.yml` to store DB settings like `username`, you can modify settings in the file for your actual situation. 
+`server` provides RESTful API to get client IP, get silo list or maintain each silo. And there is also a file named `client/config.yml` to store DB settings like `username`, so we can modify settings in the file for our actual situation. 
 
 `server` uses web framework Flask to build RESTful API. For more details, please read the "RESTful API Specification" section.
 
@@ -67,19 +70,19 @@ On the upstream machine, execute following commands:
 #### Notice
 The command above is executed in Windows environment.But in Linux environment, the command, reference and separator for environment variable to set PYTHONPATH are different.
 
-**Windows**
-* use `set` command
-* use `% %` to reference the environment variable
-* use `;` as the separator
+1. Windows
+    * use `set` command
+    * use `% %` to reference the environment variable
+    * use `;` as the separator
+    
+            set PYTHONPATH=%PYTHONPATH%;.
 
-        set PYTHONPATH=%PYTHONPATH%;.
-
-**Linux**
-* use `export` command
-* use `$` to reference the environment variable
-* use `:` as the separator
-
-        export PYTHONPATH=$PYTHONPATH:.
+2. Linux
+    * use `export` command
+    * use `$` to reference the environment variable
+    * use `:` as the separator
+    
+            export PYTHONPATH=$PYTHONPATH:.
 
 Please use the correct command to set PYTHONPATH according to your system environment.
 
@@ -100,7 +103,7 @@ Task Scheduler enables you to automatically perform routine tasks on a chosen co
 6. Click **Browse** to find the program you want to start, and then click **Next**.
 7. Click **Finish**.
 
-For more details about Task Scheduler, please click [here](http://windows.microsoft.com/en-US/windows/schedule-task#1TC=windows-7).
+For more details about Task Scheduler, please click [here][scheduler].
 
 ### Cron job in Linux
 Cron job are used to schedule commands to be executed periodically. You can setup commands or scripts, which will repeatedly run at a set time. Cron is one of the most useful tool in Linux. 
@@ -131,7 +134,7 @@ For example, if we want `client/downstream.py` to be executed every 2 hours, we 
 
     0 */2 * * * /path/to/command/client/downstream.py
     
-For more details about cron, please click [here](http://www.cyberciti.biz/faq/how-do-i-add-jobs-to-cron-under-linux-or-unix-oses/).
+For more details about cron, please click [here][cron].
 
 ## RESTful API Specification
 ### Get index
@@ -286,4 +289,19 @@ To delete a silo by silo id.
         curl -X DELETE http://localhost:5000/silos/silo1
         
 # Glossary
-To be updated.
+This section provides some explanation about few terms mentioned above. 
+
+1. Sever
+
+    As a Sever, it should have a static IP. Besides, it is necessary for Server to be installed the database like SQLite or MySQL. 
+    
+2. Upstream & Downstream
+
+    Unlike Sever, the Upstream normally has an ever-changing IP. So the Upstream updates the DNS record specified in the configuration file，and the Downstream get DNS record from it. It makes the DNS rules of local host file on Downstream is consonant with the Upstream IP address.
+
+3. Silo
+
+    The silo used to record the DNS information. Each silo has a unique ID, and each ID corresponds to a Sever. The silo may contiains more than one DNS record, and each DNS record contains hostname and IP address. We can get different silo information by different RESTful API on the Server.
+
+[scheduler]: http://windows.microsoft.com/en-US/windows/schedule-task#1TC=windows-7 "Schedule a task"
+[cron]: http://www.cyberciti.biz/faq/how-do-i-add-jobs-to-cron-under-linux-or-unix-oses/ "HowTo: Add Jobs To cron Under Linux or UNIX?"
