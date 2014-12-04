@@ -19,6 +19,7 @@ This python file has the following three modules:
     `client/downstream` can get DNS record of silo specified in `client/config.yml` by sending `Get /silos/silo_id` request. And then, it will modify the local host file to change DNS rules to the latest version without any manual modification.
 
 3. server
+
     `server` module used in the sever. `server` provides RESTful APIs to get some silo information so that we can use these APIs to get client IP, get silo list or maintain each silo. And there is also a file named `client/config.yml` to store DB settings like `username`, so we can modify settings in the file for our actual situation. 
 
     `server` uses web framework Flask to build RESTful API. For more details, please read the "RESTful API Specification" section.
