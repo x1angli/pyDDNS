@@ -95,7 +95,7 @@ Task Scheduler enables you to automatically perform routine tasks on a chosen co
 6. Click **Browse** to find the program you want to start, and then click **Next**.
 7. Click **Finish**.
 
-The operation above is performed in Windows 7 environment. There may be a little different in other Windows environment, please operate in the light of actual conditions. For more details about Task Scheduler, please click [here][scheduler].
+The operations above are performed in Windows 7 environment. There may be a little different in other Windows environments, please operate in the light of actual conditions. For more details about Task Scheduler, please click [here][scheduler].
 
 ### Cron job in Linux
 Cron job are used to schedule commands to be executed periodically. You can setup commands or scripts, which will repeatedly run at a set time. Cron is one of the most useful tool in Linux. 
