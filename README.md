@@ -281,7 +281,7 @@ To delete a silo by silo id.
         curl -X DELETE http://localhost:5000/silos/silo1
         
 # Glossary
-This section provides some explanation about few terms mentioned above. 
+This section provides some explanations about few terms mentioned above. 
 
 1. Sever
 
