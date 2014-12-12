@@ -4,40 +4,26 @@ DDNS-chiasma
 A Dynamic DNS system used to update DNS records.
 
 # Introduction
-This python project Contains the following three modules:
+This python project contains the following three modules:
 
 1. Upstream
 
-    The upstream machine normally has an ever-changing IP. To dynamically tracking the upstream machine's IP, we need to execute the upstream Python module intermittently. At such times, the `client/upstream` module is used on the upstream machine.
-
-    Once the `client/upstream` module is executed, it sends a `Get /silos/silo_id` request to retrieve the IP of itself. If the IP address has changed, it will continue to send a `PUT /silos/silo_id` request to update DNS records of silos specified in `client/config.yml`.
-
-    `Silo` is used to record the DNS information. Each silo has a unique ID, and each ID corresponds to a sever. The silo may contiains more than one DNS record, and each DNS record contains hostname and IP address. You can get different silo information by different RESTful API on the server.
-
-    `Client/config.yml` is a YAML file to store the server and DNS details. Besides, it also provides an entry named `getIpFrom`. If the upstream machine has an independent public IP, `getIpFrom` should be set to `Socket`, otherwise, it should be set to `ServerApi`.
-
-    So finally, we can get a latest `client/config.yml` file on the upstream machine.
+    The upstream unit has an ever-changing IP. To dynamically tracking the upstream machine's IP, we need to execute the `client/upstream` Python module on the upstream unit. Once the `client/upstream` module is executed, it either sends a `Get /silos/silo_id` request to retrieve the IP of itself, or attempts to get an IP address from one of the network adaptors. If the IP address has changed, it will go ahead sending a `PUT /silos/silo_id` request to update DNS records under the silo specified in `client/config.yml`.(Here, a `Silo` means a group of DNS records. Each silo has a unique ID and one or more DNS record entry, and each DNS record entry contains a hostname and an IP address.)
 
 2. Downstream
 
-    On the upstream machine, we just get a latest YAML file but not the local host file which stores DNS rules, so we must execute `client/downstream` module on the downstream machine.
-
-    `Client/downstream` module can get DNS records of silos specified in `client/config.yml` by sending `Get /silos/silo_id` request. And then, it will modify the DNS rules in the local host file to the latest version without any manual modification.
+    The downstream unit usually needs to communiate with the upstream unit, so it needs to know the current IP address of the upstream unit. To achieve this, we need to executed the `client/downstream` module on the downstream unit. Once it is executed, it can get all DNS records of a silo. And then, it will modify the hosts file to update relevant DNS records on the downstream unit. 
 
 3. Server
 
-    As a sever, it should have a static IP. What's more, it is necessary for the server to install a database like SQLite or MySQL.
+    The server is the "central hub" where all DNS records are stored, updated, and communicated. Thus, it should have a static IP. Once the `server` module is executed on the server, it essentially starts a Web Service provider that constantly communiates with the upstream and downstream units.
 
-    `Server` module is used on the sever. It uses web framework 'Flask' to build RESTful APIs, so that we can get client IP, get silos list or maintain each silo by these APIs.
-
-    Besides, there is also a YAML file named `client/config.yml` to store DB settings like `username` and `password`. You can modify these settings for your actual situation.
-
-    For more details about RESTful APIs in `server`, please read the "RESTful API Specification" section.
+    In parcicular, a YAML file named `client/config.yml` are located in the server module to store DB connection info. The server module uses web framework 'Flask' to build RESTful APIs, so that we can get client IP, get silos list or maintain each silo by these APIs. For more details about RESTful APIs in `server`, please read the "RESTful API Specification" section.
 
 ## Installation
-1. Make sure Python is properly installed on all your platforms (i.e. Server, Upstream, Downstream)
+1. Make sure Python 3.x runtime is properly installed on all the paticipating units (i.e. the server, the upstream, and the downstream unit). Plus, a relational database should installed on the server unit.
 2. Modify the `/server/config.yml` file to change DB setting, and `/client/config.yml` file to specify Server and DNS details
-3. Execute following commands to install requirement environments and initialize your own database on server side:
+3. Execute following commands to install required Python packages and initialize your own database on server side:
 
         pip install -r requirements.txt
         flask --app=server.app initdb
@@ -55,34 +41,36 @@ This python project Contains the following three modules:
         curl -X GET http://localhost:81/ping
 
 ## Start using the client
-### Downstream (End user)
+### Downstream (The end user)
 On the downstream machine, execute following commands
 
         cd DDNS-chiasma
         set PYTHONPATH=%PYTHONPATH%;.
         python client/downstream.py
 
-### Upstream (The endpoint with dynamic IP)
+### Upstream (The unit with dynamic IP)
 On the upstream machine, execute following commands:
 
         cd DDNS-chiasma
         set PYTHONPATH=%PYTHONPATH%;.
         python client/upstream.py
 
-#### Notice
-The set command above is executed in Windows environment. But in Linux environment, the command, reference and separator for environment variable to set PYTHONPATH are different.
+#### Note
+The `set` command above is for Windows only. But under Linux, the command, reference, and separator for the `PYTHONPATH` environment are different.
 
 1. Windows
-    * use `set` command
-    * use `% %` to reference the environment variable
-    * use `;` as the separator
+    * Use the `set` command;
+    * Use `%` to refer the environment variable;
+    * Use `;` as the separator;
+    * Example: 
 
             set PYTHONPATH=%PYTHONPATH%;.
 
 2. Linux
-    * use `export` command
-    * use `$` to reference the environment variable
-    * use `:` as the separator
+    * Use the `export` command; 
+    * Use `$` to refer the environment variable;
+    * Use `:` as the separator;
+    * Example:
 
             export PYTHONPATH=$PYTHONPATH:.
 
@@ -94,7 +82,7 @@ If you want to run the system automatically, please read this section and follow
 ### Task Scheduler in Windows
 Task Scheduler enables you to automatically perform routine tasks on a chosen computer. Task Scheduler does this by monitoring whatever criteria you choose to initiate the tasks and then executing the tasks when the criteria is met.
 
-1. Open Task Scheduler by clicking the **Start** button, clicking **Control Panel**, clicking **System and Security**, clicking **Administrative Tools**, and then double-clicking **Task Scheduler**.
+1. Open Task Scheduler by clicking the **Start** button, then click following items: **Control Panel**,  **System and Security**,  **Administrative Tools**, and finally **Task Scheduler**.
 2. Click the **Action** menu, and then click **Create Basic Task**.
 3. Type a name for the task and an optional description, and then click **Next**.
 4. Do one of the following:
@@ -105,10 +93,10 @@ Task Scheduler enables you to automatically perform routine tasks on a chosen co
 6. Click **Browse** to find the program you want to start, and then click **Next**.
 7. Click **Finish**.
 
-The operations above are performed in Windows 7 environment. There may be a little different in other Windows environments, please operate in the light of actual conditions. For more details about Task Scheduler, please click [here][scheduler].
+The operations above are performed in Windows 7 environment. The procedure for other versions of Windows may be differnt. For further details on Task Scheduler, please click [here][scheduler].
 
 ### Cron job in Linux
-Cron job are used to schedule commands to be executed periodically. You can setup commands or scripts, which will repeatedly run at a set time. Cron is one of the most useful tool in Linux.
+Cron job is used to schedule commands to be executed periodically. You can setup commands or scripts, which will repeatedly run at a scheduled time. Cron is one of the most useful tool in Linux.
 
 To edit your crontab file, type the following command at the Linux shell prompt:
 
@@ -126,11 +114,11 @@ Where,
 * 5: Day of the week(0-7 [7 or 0 == sunday])
 * /path/to/command - Script or command name to schedule
 
-operator allows you to specifying multiple values in a field. There are three operators:
-* The asterisk (*) : This operator specifies all possible values for a field
-* The comma (,) : This operator specifies a list of values
-* The dash (-) : This operator specifies a range of values
-* The separator (/) : This operator specifies a step value
+Operators allow you to specifying multiple values in a field. There are three types operators:
+* The asterisk (*) : indicates all possible values for a field
+* The comma (,) : usually used between a list of values
+* The dash (-) : specifies a range of values
+* The separator (/) : specifies a step value
 
 For example, if we want `client/downstream.py` to be executed every 2 hours, we should enter:
 
@@ -139,27 +127,8 @@ For example, if we want `client/downstream.py` to be executed every 2 hours, we 
 For more details about cron, please click [here][cron].
 
 ## RESTful API Specification
-### Get index
-
-1. Request
-
-        GET /
-
-2. Parameters
-
-    None
-
-3. JSON Result
-
-        {'message': 'Please refer to our api'}
-
-4. Curl Example
-
-        curl -X GET http://localhost:5000/
-
-
-### Ping the server
-This RESTful API allows you to know things are working.
+### Ping
+This API does not provide any meaningful result, but the system administrator or end users can use it to see if the server is working.
 
 1. Request
 
@@ -177,9 +146,9 @@ This RESTful API allows you to know things are working.
 
         curl -X GET http://localhost:5000/ping
 
-### Getting your IP address
+### Get your IP public address
 This RESTful API allows you to get your current public IP address.
-Plese note that this API may not work correctly if you are behind a proxy.
+Plese note that this API may not return expected result when the API call are invoked through an HTTP proxy .
 
 1. Request
 
