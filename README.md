@@ -1,10 +1,10 @@
-DDNS-chiasma
+pyDDNS
 ============
 
-A Dynamic DNS system used to update DNS records.
+A Dynamic DNS system used to update DNS records based on Python.
 
 # Introduction
-This python project contains the following three modules:
+This Python project contains the following three modules:
 
 1. Upstream
 
@@ -31,7 +31,7 @@ This python project contains the following three modules:
 ## Start using the server
 1. Execute following commands:
 
-        cd DDNS-chiasma
+        cd pyDDNS
         set PYTHONPATH=%PYTHONPATH%;.
         python server/app.py
 
@@ -44,14 +44,14 @@ This python project contains the following three modules:
 ### Downstream (The end user)
 On the downstream machine, execute following commands
 
-        cd DDNS-chiasma
+        cd pyDDNS
         set PYTHONPATH=%PYTHONPATH%;.
         python client/downstream.py
 
 ### Upstream (The unit with dynamic IP)
 On the upstream machine, execute following commands:
 
-        cd DDNS-chiasma
+        cd pyDDNS
         set PYTHONPATH=%PYTHONPATH%;.
         python client/upstream.py
 
