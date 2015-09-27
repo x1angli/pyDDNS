@@ -17,7 +17,7 @@ def updateHostFile():
 
     if sys.platform == 'win32':
         hostaddr = '{}\\system32\\drivers\\etc\\hosts'.format(os.environ.get('SystemRoot'))
-    elif sys.platform == 'linux':
+    elif sys.platform in ['linux', 'darwin']:
         hostaddr = '/etc/hosts'
     else:
         raise Exception('The host file\'s address is unknown.')

@@ -2,13 +2,24 @@ __author__ = 'x1ang.li'
 
 from client.common import *
 import json
+import socket
+import re
 
 def checkip():
-    r = reqget('/ip')
-    if (r.status_code != 200):
-        raise Exception('HTTP request error. HTTP status code %i' % r.status_code)
-    rjson = r.json()
-    ip = rjson['ip']
+    if clicfg['getIpFrom'] == 'ServerApi':
+        r = reqget('/ip')
+        if (r.status_code != 200):
+            raise Exception('HTTP request error. HTTP status code %i' % r.status_code)
+        rjson = r.json()
+        ip = rjson['ip']
+    elif clicfg['getIpFrom'] == 'Socket':
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        host = re.findall(r'http://([^:]*).*', clicfg['endpoint'])[0]
+        s.connect((host, 80))
+        ip = s.getsockname()[0]
+        s.close()
+    else:
+        raise Exception("Cannot getIpForm <%s>, reset it to be ServerApi or Socket" % clicfg['getIpFrom'])
     return ip
 
 def haschanged(newip):
