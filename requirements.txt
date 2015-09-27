@@ -1,11 +1,8 @@
---allow-external pyyaml
 pyyaml
 
 requests
 
-https://github.com/mitsuhiko/flask/tarball/master#egg=flask
-
-# SQLAlchemy
+Flask
 Flask-SQLAlchemy
 
 flask-restful
